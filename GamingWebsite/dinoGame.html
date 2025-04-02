@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dino Game with Fireworks</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: #e0e0e0;
+            margin: auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let dino = { x: 50, y: 300, width: 50, height: 50, jump: false, jumpHeight: 0 };
+        let isJumping = false;
+        let obstacles = [];
+        let score = 0;
+        let highScore = 0;
+        let gameSpeed = 2;
+        let fireworks = [];
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' && !isJumping) {
+                isJumping = true;
+                dino.jumpHeight = 0;
+            }
+        });
+
+        function update() {
+            if (isJumping) {
+                dino.jumpHeight += 5;
+                dino.y -= 5;
+                if (dino.jumpHeight >= 50) {
+                    isJumping = false;
+                }
+            } else if (dino.y < 300) {
+                dino.y += 5;
+            }
+
+            if (Math.random() < 0.02) {
+                obstacles.push({ x: canvas.width, y: 300, width: 30, height: 30, passed: false });
+            }
+
+            for (let obs of obstacles) {
+                obs.x -= gameSpeed;
+
+                // Score Increment Logic
+                if (!obs.passed && obs.x + obs.width < dino.x) {
+                    score++;
+                    obs.passed = true;  // Mark as passed
+                    gameSpeed += 0.1;   // Increase speed
+                    if (score > highScore) highScore = score;
+
+                    if (score === 100) {
+                        createFireworks();
+                    }
+                }
+
+                if (dino.x < obs.x + obs.width &&
+                    dino.x + dino.width > obs.x &&
+                    dino.y < obs.y + obs.height &&
+                    dino.y + dino.height > obs.y) {
+                    alert("Game Over! Your Score: " + score);
+                    resetGame();
+                }
+            }
+
+            obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
+            updateFireworks();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+            ctx.fillStyle = 'red';
+            for (let obs of obstacles) {
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            }
+
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText("Score: " + score, 10, 30);
+            ctx.fillText("High Score: " + highScore, 10, 60);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resetGame() {
+            dino.y = 300;
+            obstacles = [];
+            score = 0;
+            gameSpeed = 2;
+            fireworks = [];
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 5; i++) {
+                fireworks.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height / 2,
+                    particles: Array.from({ length: 20 }, () => ({
+                        x: Math.random() * 10 - 5,
+                        y: Math.random() * 10 - 5,
+                        life: 50
+                    }))
+                });
+            }
+        }
+
+        function updateFireworks() {
+            fireworks.forEach((firework, index) => {
+                firework.particles.forEach(particle => {
+                    particle.x += Math.random() * 4 - 2;
+                    particle.y += Math.random() * 4 - 2;
+                    particle.life--;
+                });
+
+                if (firework.particles[0].life <= 0) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            drawFireworks();
+        }
+
+        function drawFireworks() {
+            fireworks.forEach(firework => {
+                firework.particles.forEach(particle => {
+                    ctx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+                    ctx.fillRect(firework.x + particle.x, firework.y + particle.y, 3, 3);
+                });
+            });
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
+

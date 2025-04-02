@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu - My Gaming Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My Gaming Website!</h1>
+
+    <div class="menu-container">
+        <h2>Select Your Theme</h2>
+        <button onclick="selectTheme('male')">Male Theme</button>
+        <button onclick="selectTheme('female')" class="theme-button">Female Theme</button>
+        <button onclick="selectTheme('custom')">Custom Theme</button>
+    </div>
+
+    <div id="main-menu" style="display:none;">
+        <h2>Main Menu</h2>
+        <button onclick="window.location.href='ticTacToe.html'">Tic-Tac-Toe</button>
+        <button onclick="window.location.href='dinoGame.html'">Dino Game</button>
+        <button onclick="window.location.href='flappyBird.html'">Flappy Bird</button>
+        <button onclick="window.location.href='science guru.html'">Quiz Game</button> <!-- Added Quiz Game Button -->
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

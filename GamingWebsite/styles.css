@@ -1,0 +1,38 @@
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 20px;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3700b3;
+}
+
+/* Female Theme Button */
+.theme-button {
+    background-color: #ff6f91;
+}
+
+.theme-button:hover {
+    background-color: #c2185b;
+}
+
+/* Main Menu */
+.menu-container {
+    margin-top: 50px;
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div id="mode-selection">
+        <button onclick="selectMode('1')">1 Player</button>
+        <button onclick="selectMode('2')">2 Players</button>
+    </div>
+
+    <div id="difficulty-selection" style="display:none;">
+        <button onclick="startGame('easy')">Easy</button>
+        <button onclick="startGame('medium')">Medium</button>
+        <button onclick="startGame('hard')">Hard</button>
+    </div>
+
+    <div id="game-board" style="display:none;" class="board"></div>
+
+    <div id="status"></div>
+
+    <script>
+        let gameMode, currentPlayer = 'X', board = Array(9).fill('');
+        let isGameActive = true;
+        let aiPlayer = 'O';  // AI will play as 'O'
+
+        function selectMode(mode) {
+            gameMode = mode;
+            document.getElementById('mode-selection').style.display = 'none';
+            if (gameMode === '1') {
+                document.getElementById('difficulty-selection').style.display = 'block';
+            } else {
+                startGame();
+            }
+        }
+
+        function startGame(difficulty = 'easy') {
+            document.getElementById('difficulty-selection').style.display = 'none';
+            document.getElementById('game-board').style.display = 'grid';
+            createBoard();
+            currentPlayer = 'X'; // Player 1 starts as 'X'
+        }
+
+        function createBoard() {
+            const boardElement = document.getElementById('game-board');
+            boardElement.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleCellClick);
+                boardElement.appendChild(cell);
+            }
+        }
+
+        function handleCellClick(e) {
+            const index = e.target.dataset.index;
+            if (board[index] !== '' || !isGameActive) return;
+
+            board[index] = currentPlayer;
+            e.target.textContent = currentPlayer;
+            checkWinner();
+
+            if (gameMode === '1' && isGameActive && currentPlayer === 'X') {
+                setTimeout(computerMove, 500);
+            } else if (gameMode === '2') {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                document.getElementById('status').textContent = `Player ${currentPlayer}'s Turn`;
+            }
+        }
+
+        function computerMove() {
+            let emptyIndices = board.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+            let move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            board[move] = aiPlayer;
+            document.querySelector(`.cell[data-index='${move}']`).textContent = aiPlayer;
+            checkWinner();
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    isGameActive = false;
+                    document.getElementById('status').textContent = `Player ${board[a]} Wins!`;
+                    return;
+                }
+            }
+
+            if (!board.includes('')) {
+                isGameActive = false;
+                document.getElementById('status').textContent = "It's a Draw!";
+            }
+        }
+    </script>
+</body>
+</html>
